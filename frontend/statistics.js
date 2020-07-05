@@ -35,7 +35,7 @@ function Statistics({settings, record}) {
   // remove special characters, trim white space, filter empty keywords
   // allow word characters, spaces, and -
   keywordListDistinct = keywordListDistinct.map(keyword => {
-    return keyword.replace(/[^\w -]/g, '').trim();
+    return keyword.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '').trim();
   })
   keywordListDistinct = keywordListDistinct.filter(keyword => keyword);
   let keywordListComponents = [];
@@ -51,20 +51,20 @@ function Statistics({settings, record}) {
     }
     const keywordCount = regExResult.length;
     // create the component for the keyword list
+    keywordListComponents.push(
+      <React.Fragment>
+        <span
+          style={{color: keywordCount ? keywordColorHex : keywordMissingColorHex}}
+        >
+          {keyword}
+        </span>
+        ({keywordCount})&ensp;
+      </React.Fragment>
+    )
     if (keywordCount) {
       keywordsUsed.push(keyword);
-      keywordListComponents.push(
-        <span>
-          <span style={{color: keywordColorHex}}>{keyword}</span>({keywordCount})&nbsp;
-        </span>
-      )
     } else {
       keywordsNotUsed.push(keyword);
-      keywordListComponents.push(
-        <React.Fragment>
-          <span style={{color: keywordMissingColorHex}}>{keyword}</span>({keywordCount})&ensp;
-        </React.Fragment>
-      )
     }
     // update the text string with colors for the keywords
     for (let pattern of regExResult) {
@@ -109,7 +109,7 @@ function Statistics({settings, record}) {
       </details>
       <br />
       <div>
-        <p>{keywordListComponents}</p>
+        {keywordListComponents}
       </div>
       <br />
       <iframe
