@@ -1,4 +1,4 @@
-# Keyword Counter (Custon Block for Airtable)
+# Keyword Counter (Custom Block for Airtable)
 
 Set keywords for each record in an [Airtable](https://airtable.com) base and see how those keywords are used in text.
 
