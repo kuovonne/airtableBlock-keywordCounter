@@ -7,6 +7,7 @@ Use this block when drafting or reviewing text for
 - essays with vocabulary words
 - sentences with spelling words
 
+![](/keyword_counter.png)
 ## Inspiration
 
 A friend in a start-up company was telling me about writing text for his product and the difficulty of crafting quality content, 
