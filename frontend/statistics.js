@@ -5,6 +5,7 @@ import {
 } from '@airtable/blocks/ui';
 import React from 'react';
 
+
 function Statistics({settings, record}) {
   // unpack the settings
   const table = settings.table;
@@ -12,11 +13,9 @@ function Statistics({settings, record}) {
   const keywordField = settings.keywordField;
   const keywordColorHex = settings.keywordColorHex;
   const keywordMissingColorHex = settings.keywordMissingColorHex;
-  // get cell values
-  const textValue = record.getCellValueAsString(textField.name);
-  const textValueAsString = textValue ? textValue : ""
-  const keywordValueAsString = record.getCellValueAsString(keywordField.name);
-
+  // get cell values, trimming and removing html entities from text string
+  const textValueAsString = htmlEntities(record.getCellValueAsString(textField.name).trim())
+  const keywordValueAsString = record.getCellValueAsString(keywordField.name).trim();
   // calculate number of characters
   const charCount = textValueAsString ? textValueAsString.length : 0
   // calculate number of words
@@ -70,6 +69,7 @@ function Statistics({settings, record}) {
     for (let pattern of regExResult) {
       // Wresting the Cthulhu Way of parsing HTML to match only keywords not in html
       // https://blog.codinghorror.com/parsing-html-the-cthulhu-way/
+      // Html in the original text should be converted to entities, so the only html should be the <span> I'm putting in for color
       const regExPattern = new RegExp("\\b" + pattern.trim() + "(?!([^<]+)?>)", "g");
       const replaceText = "<span style='color: " + keywordColorHex+ "'>" + pattern + "</span>";
       textValueWithColors = textValueWithColors.replace(regExPattern, replaceText);
@@ -114,11 +114,16 @@ function Statistics({settings, record}) {
       <br />
       <iframe
         srcDoc={textValueWithColors}
-        style={{width: '90%',  display: 'block'}}
+        style={{width: '90%', minHeight: '0', height: '100%'}}
       >
       </iframe>
     </Box>
   )
+}
+
+
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 
