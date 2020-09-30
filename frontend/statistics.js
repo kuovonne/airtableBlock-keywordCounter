@@ -14,37 +14,38 @@ function Statistics({settings, record}) {
   const keywordColorHex = settings.keywordColorHex;
   const keywordMissingColorHex = settings.keywordMissingColorHex;
   // get cell values, trimming and removing html entities from text string
-  const textValueAsString = htmlEntities(record.getCellValueAsString(textField.name).trim())
+  const textValueAsStringRaw = record.getCellValueAsString(textField.name)
+  const textValueStringWithEntities = htmlEntities(textValueAsStringRaw.trim())
   const keywordValueAsString = record.getCellValueAsString(keywordField.name).trim();
   // calculate number of characters
-  const charCount = textValueAsString ? textValueAsString.length : 0
+  const charCount = textValueAsStringRaw.length
   // calculate number of words
   let wordCount;
-  if (textValueAsString) {
+  if (textValueAsStringRaw) {
     // number of words is the number of word boundaries plus one
-    const regExResult = textValueAsString.match(/\s+/ig);
+    const regExResult = textValueAsStringRaw.match(/\s+/ig);
     wordCount = regExResult ? regExResult.length + 1 : 1;
   } else {
     // an empty string has no words
     wordCount = 0;
   }
   // convert keywords used to JSX components with usage counts
-  const keywordList = keywordValueAsString ? keywordValueAsString.split(", ") : [];
+  const keywordList = keywordValueAsString ? keywordValueAsString.split(",").map(keyword => keyword.trim()).filter(keyword => keyword.length) : [];
   let keywordListDistinct = [...new Set(keywordList)];
   // remove special characters, trim white space, filter empty keywords
   // allow word characters, spaces, and -
   keywordListDistinct = keywordListDistinct.map(keyword => {
-    return keyword.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '').trim();
+    return keyword.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
   })
   keywordListDistinct = keywordListDistinct.filter(keyword => keyword);
   let keywordListComponents = [];
   let keywordsUsed = [];
   let keywordsNotUsed = [];
-  let textValueWithColors = textValueAsString;
+  let textValueWithColors = textValueStringWithEntities;
   for (const keyword of keywordListDistinct) {
     // find the keyword based on regular expressions
     const regExPattern = new RegExp("\\b" + keyword.trim(), "ig");
-    let regExResult = textValueAsString.match(regExPattern);
+    let regExResult = textValueStringWithEntities.match(regExPattern);
     if (!regExResult) {
       regExResult = [];
     }
